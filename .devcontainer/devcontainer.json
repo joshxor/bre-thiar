@@ -5,8 +5,8 @@
   "portsAttributes": {
     "8000": {
       "label": "Bré Thiar Mobile QA",
-      "onAutoForward": "openBrowser"
+      "onAutoForward": "silent"
     }
   },
-  "postStartCommand": "nohup python3 -m http.server 8000 --bind 0.0.0.0 > /tmp/bre-thiar-http.log 2>&1 &"
+  "postStartCommand": "bash -lc 'pkill -f \"python3 -m http.server 8000\" || true; nohup python3 -m http.server 8000 --bind 0.0.0.0 > /tmp/bre-thiar-http.log 2>&1 & sleep 2; gh codespace ports visibility 8000:public -c \"$CODESPACE_NAME\" || true'"
 }
