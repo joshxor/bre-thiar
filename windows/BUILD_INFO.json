@@ -1,0 +1,13 @@
+{
+  "product": "Bre Thiar",
+  "displayName": "Bré Thiar",
+  "version": "0.7.1",
+  "contentVersion": 6,
+  "protocolVersion": 1,
+  "engine": "Godot 4.7.1",
+  "platform": "Windows x86-64",
+  "productionClient": "client/scenes/main.tscn",
+  "authoritativeServer": "server/server.mjs",
+  "developmentBranch": "windows/v0.7-native-client",
+  "mobileStatus": "proof-of-concept only; not production runtime"
+}
