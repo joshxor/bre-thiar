@@ -1,27 +1,48 @@
-# Bré Thiar — Windows Production Client v0.7.0
+# Bré Thiar — Windows Production Client v0.7.1
 
-This is the Windows-first production client foundation. It deliberately does **not** use the GitHub Pages/mobile renderer.
+Bré Thiar is now a Windows-first native Godot MMO client. The earlier browser/mobile build remains a proof-of-concept only and is not part of the production runtime.
 
-## Runtime architecture
+## What is in this package
 
-- Godot 4 desktop client.
-- Shared authoritative map JSON (`assets/maps/*.json`).
-- 32×32 logical collision cells.
-- 60 native outdoor ground metatiles for Bré Thiar + Rowanwood.
-- Independent structure/tree back layers.
-- Independent NPC/player/enemy entities.
-- Separate transparent roof/canopy foreground layers.
-- Native Old Barrow terrain atlas.
-- Cardinal movement, camera follow, NPC interaction, combat QA, and map transitions.
+- Godot 4.7.1 desktop client using the authored v0.6 visual/world package.
+- Shared authoritative map JSON (`client/assets/maps/*.json`) with 32×32 logical collision cells.
+- 60 authored native overworld metatiles for Bré Thiar + Rowanwood; no scene-sized stretched map screenshot.
+- Independent buildings, trees, props, NPCs, monsters, player entities, and transparent roof/canopy foreground layers.
+- Native Old Barrow terrain/props and Stonebound Warden encounter.
+- Directional idle/walk/Assail player presentation, authoritative boar movement/facing, enemy HP bars, map-bounded camera.
+- Authoritative Node 22+ server with accounts, persistence, WebSocket snapshots, multiplayer presence/chat, movement, combat, quests, Path progression, religion, civic voting, inventory/equipment, consumables, death/respawn, and transitions.
+- Functional Character / Chronicle panel with equippable gear and usable bread/draught items.
+- Protocol/content version handshake so incompatible client/server versions fail clearly instead of corrupting state.
 
-## Local production bundle
+## Fastest Windows test
 
-The validated production bundle contains the full v0.6 asset library under `client/assets/` plus the source in this directory. The repository-side source is kept separate from the retired browser/mobile QA path.
+1. Have **Godot 4.7.1** and **Node.js 22+** available.
+2. Double-click `RUN_WINDOWS_DEV.bat`.
 
-## Open on Windows
+The launcher finds Godot, starts the authoritative server on a free localhost port, waits for health, supplies the server URLs to the Godot client, opens a local dev session, and stops the server when the game closes.
 
-Install Godot 4.7.x, then import `client/project.godot` and press F6/F5.
+## Other one-click tools
 
-QA shortcuts: F1 Bré Thiar, F2 Rowanwood, F3 Old Barrow.
+- `OPEN_WINDOWS_EDITOR.bat` — opens the Godot project.
+- `VALIDATE_WINDOWS.bat` — runs asset/map validation, network-contract checks, Node syntax, the full authoritative multiplayer/progression smoke test, and the Godot headless self-check when Godot is available.
+- `BUILD_WINDOWS_EXE.bat` — validates, then exports `BreThiar.exe` and creates a checksummed `BreThiar-Windows-v0.7.1.zip`. Godot 4.7.1 export templates must be installed first.
 
-The export preset is configured for `Windows Desktop`; export templates are required to produce the standalone `.exe`.
+## Controls
+
+- WASD / Arrow keys — move
+- E / Space — interact
+- 1 / F / J — Assail
+- 2 — Focus
+- 3 — learned Path skill
+- 4 — Yew Draught
+- Enter — local chat
+- C / I — Character / Chronicle / inventory
+- F1 / F2 / F3 — offline QA jumps to Bré Thiar / Rowanwood / Old Barrow
+
+## Current validation status
+
+Automated non-Godot validation is green, including a real server/WebSocket smoke covering registration/auth/reconnect, remote presence, chat, authoritative movement/combat/transitions/persistence, Maelíth → Old Barrow → Eira progression, civic voting, shrine faith, equipment/effective stats, bread/draught use, all five Path skills, and authoritative death/respawn.
+
+The remaining hard gate is the first real **Godot 4.7.1 runtime/import + visual pass** on a machine where Godot can execute. `client/tests/headless_world_self_check.gd` is already prepared to automate most of that validation.
+
+See `CHANGELOG.md` and `docs/WINDOWS_DIRECTION.md` for the current production rules.
