@@ -1,11 +1,16 @@
 extends Node
 class_name BreNetworkClient
 
+const PROTOCOL_VERSION := 1
+const CONTENT_VERSION := 6
+
 signal status_changed(text: String)
 signal authenticated(account: Dictionary)
+signal auth_failed(action: String, response_code: int, message: String)
 signal snapshot_received(snapshot: Dictionary)
 signal chat_received(message: Dictionary)
 signal event_received(message: Dictionary)
+signal welcome_received(message: Dictionary)
 signal connection_closed(code: int, reason: String)
 
 @export var server_http := "http://127.0.0.1:8765"
@@ -17,13 +22,25 @@ var socket := WebSocketPeer.new()
 var http: HTTPRequest
 var pending_http := ""
 var was_open := false
+var last_snapshot: Dictionary = {}
+var local_dev_retry_login := false
+var local_dev_password := ""
 
 func _ready() -> void:
+	_apply_environment_overrides()
 	http = HTTPRequest.new()
 	http.timeout = 6.0
 	add_child(http)
 	http.request_completed.connect(_on_http_completed)
 	set_process(true)
+
+func _apply_environment_overrides() -> void:
+	var http_override := OS.get_environment("BRE_SERVER_HTTP").strip_edges()
+	var ws_override := OS.get_environment("BRE_SERVER_WS").strip_edges()
+	if not http_override.is_empty():
+		server_http = http_override.trim_suffix("/")
+	if not ws_override.is_empty():
+		server_ws = ws_override
 
 func register_account(user: String, password: String, character_name: String) -> Error:
 	username = user.strip_edges().to_lower()
@@ -34,6 +51,12 @@ func login(user: String, password: String) -> Error:
 	username = user.strip_edges().to_lower()
 	pending_http = "login"
 	return _post("/api/login", {"username": username, "password": password})
+
+func ensure_local_dev_account(user: String = "localdev", password: String = "brethiar", character_name: String = "Aedric") -> Error:
+	# Only used by the local Windows dev launcher. The server is bound to 127.0.0.1.
+	local_dev_retry_login = true
+	local_dev_password = password
+	return register_account(user, password, character_name)
 
 func connect_with_token(value: String) -> Error:
 	token = value
@@ -47,6 +70,9 @@ func disconnect_world() -> void:
 	if socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
 		send_input("")
 		socket.close(1000, "Client exit")
+
+func is_connected() -> bool:
+	return socket.get_ready_state() == WebSocketPeer.STATE_OPEN
 
 func send_input(direction: String) -> void:
 	var dir_value = direction if direction in ["up", "down", "left", "right"] else null
@@ -90,24 +116,39 @@ func _post(path: String, payload: Dictionary) -> Error:
 	)
 
 func _on_http_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+	var action := pending_http
+	pending_http = ""
 	var response = JSON.parse_string(body.get_string_from_utf8())
 	if result != HTTPRequest.RESULT_SUCCESS:
-		status_changed.emit("Server request failed.")
+		var request_error := "Server request failed."
+		status_changed.emit(request_error)
+		auth_failed.emit(action, response_code, request_error)
 		return
 	if typeof(response) != TYPE_DICTIONARY:
-		status_changed.emit("Server returned invalid JSON.")
+		var json_error := "Server returned invalid JSON."
+		status_changed.emit(json_error)
+		auth_failed.emit(action, response_code, json_error)
 		return
 	if response_code < 200 or response_code >= 300:
-		status_changed.emit(str(response.get("error", "Server rejected request.")))
+		var error_text := str(response.get("error", "Server rejected request."))
+		if action == "register" and response_code == 409 and local_dev_retry_login:
+			local_dev_retry_login = false
+			call_deferred("login", username, local_dev_password)
+			return
+		status_changed.emit(error_text)
+		auth_failed.emit(action, response_code, error_text)
 		return
-	if pending_http in ["register", "login"]:
+	local_dev_retry_login = false
+	local_dev_password = ""
+	if action in ["register", "login"]:
 		token = str(response.get("token", ""))
 		if token.is_empty():
-			status_changed.emit("Authentication response did not contain a session token.")
+			var token_error := "Authentication response did not contain a session token."
+			status_changed.emit(token_error)
+			auth_failed.emit(action, response_code, token_error)
 			return
 		authenticated.emit(response.get("account", {}))
 		connect_with_token(token)
-	pending_http = ""
 
 func _process(_delta: float) -> void:
 	var state := socket.get_ready_state()
@@ -135,6 +176,7 @@ func _process(_delta: float) -> void:
 func _dispatch(message: Dictionary) -> void:
 	match str(message.get("type", "")):
 		"snapshot":
+			last_snapshot = message
 			snapshot_received.emit(message)
 		"chat":
 			chat_received.emit(message)
@@ -142,6 +184,7 @@ func _dispatch(message: Dictionary) -> void:
 			event_received.emit(message)
 		"welcome":
 			status_changed.emit("World connection established.")
+			welcome_received.emit(message)
 
 func _send(payload: Dictionary) -> void:
 	if socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
