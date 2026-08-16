@@ -11,13 +11,11 @@ The mobile/browser proof-of-concept is no longer a production target. Windows is
 5. NPCs and monsters remain independent entities.
 6. The Windows build is the visual quality baseline. Any future mobile/web build must derive from it rather than invent a lower-quality art fork.
 
-## v0.7 acceptance target
+## v0.7.1 production architecture
 
-- Bré Thiar and Rowanwood load as one continuous authored outdoor map.
-- Old Barrow loads from the shared map data and native terrain atlas.
-- Player uses the directional walk sheet at the approved world scale.
-- Shared collision controls movement.
-- Map transitions work in both directions.
-- NPCs and enemies remain independent runtime entities.
-- Foreground roof/canopy sprites are the only world art allowed to occlude the player.
-- No browser, GitHub Pages, flattened-map, or mobile-cache dependency exists in the Windows runtime.
+- Offline mode exists only for native visual/map QA; online play is server-authoritative.
+- The Godot client may predict local cardinal movement for responsiveness, but snapshots own final position, zone, HP/MP, enemy state, inventory, equipment, quests, Path, faith, and civic state.
+- Inventory/equipment UI must issue server actions; client-side inventory mutation is forbidden.
+- Displayed combat ATK/DEF comes from server-provided effective values including equipment bonuses.
+- Protocol/content versions are explicit and incompatible sessions must be rejected.
+- Windows release builds are produced through `BUILD_WINDOWS_EXE.bat`; do not hand-package arbitrary editor folders as releases.
