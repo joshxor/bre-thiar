@@ -1,4 +1,4 @@
-# Bré Thiar — Windows Production Client v0.7.1
+# Bré Thiar — Windows Production Client v0.7.2
 
 Bré Thiar is now a Windows-first native Godot MMO client. The earlier browser/mobile build remains a proof-of-concept only and is not part of the production runtime.
 
@@ -13,6 +13,8 @@ Bré Thiar is now a Windows-first native Godot MMO client. The earlier browser/m
 - Authoritative Node 22+ server with accounts, persistence, WebSocket snapshots, multiplayer presence/chat, movement, combat, quests, Path progression, religion, civic voting, inventory/equipment, consumables, death/respawn, and transitions.
 - Functional Character / Chronicle panel with equippable gear and usable bread/draught items.
 - Protocol/content version handshake so incompatible client/server versions fail clearly instead of corrupting state.
+- Native NPC progression/service markers driven from authoritative quest, Path, civic, and faith state.
+- Validated store backup recovery plus WebSocket size/rate guards.
 
 ## Fastest Windows test
 
@@ -24,8 +26,8 @@ The launcher finds Godot, starts the authoritative server on a free localhost po
 ## Other one-click tools
 
 - `OPEN_WINDOWS_EDITOR.bat` — opens the Godot project.
-- `VALIDATE_WINDOWS.bat` — runs asset/map validation, network-contract checks, Node syntax, the full authoritative multiplayer/progression smoke test, and the Godot headless self-check when Godot is available.
-- `BUILD_WINDOWS_EXE.bat` — validates, then exports `BreThiar.exe` and creates a checksummed `BreThiar-Windows-v0.7.1.zip`. Godot 4.7.1 export templates must be installed first.
+- `VALIDATE_WINDOWS.bat` — runs asset/map validation, network-contract checks, Node syntax, the full authoritative multiplayer/progression smoke test, corrupted-save recovery test, and the Godot headless self-check when Godot is available.
+- `BUILD_WINDOWS_EXE.bat` — validates, then exports `BreThiar.exe` and creates a checksummed `BreThiar-Windows-v0.7.2.zip`. Godot 4.7.1 export templates must be installed first.
 
 ## Controls
 
@@ -41,7 +43,7 @@ The launcher finds Godot, starts the authoritative server on a free localhost po
 
 ## Current validation status
 
-Automated non-Godot validation is green, including a real server/WebSocket smoke covering registration/auth/reconnect, remote presence, chat, authoritative movement/combat/transitions/persistence, Maelíth → Old Barrow → Eira progression, civic voting, shrine faith, equipment/effective stats, bread/draught use, all five Path skills, and authoritative death/respawn.
+Automated non-Godot validation is green, including a real server/WebSocket smoke covering registration/auth/reconnect, remote presence, chat, authoritative movement/combat/transitions/persistence, Maelíth → Old Barrow → Eira progression, civic voting, shrine faith, equipment/effective stats, bread/draught use, all five Path skills, oversized-frame rejection, inbound action rate limiting, and authoritative death/respawn. Corrupted-primary-store recovery and incomplete-v6 save normalization also pass.
 
 The remaining hard gate is the first real **Godot 4.7.1 runtime/import + visual pass** on a machine where Godot can execute. `client/tests/headless_world_self_check.gd` is already prepared to automate most of that validation.
 
