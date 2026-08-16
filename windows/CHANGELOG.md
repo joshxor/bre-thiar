@@ -1,5 +1,18 @@
 # Bré Thiar Windows Changelog
 
+## v0.7.2 — Persistence, inventory, and network hardening
+
+- Character/Chronicle panel now exposes server-authoritative equipment and consumable actions.
+- Effective ATK/DEF is sent by the server after equipment bonuses and displayed by Windows.
+- Added all-five-Path authoritative behavior matrix plus equipment/consumable regression coverage.
+- Added validated `store.json.bak` recovery and incomplete-v6 character normalization.
+- Added safe-zone/position recovery for malformed or stale saves.
+- Added 64 KiB WebSocket message ceiling with an oversized-frame regression test.
+- Added a generous per-connection inbound action rate limit with flood-client regression coverage.
+- Added native NPC progression/service markers for Maelíth, Eira, Brannoc, and Siofra from authoritative quest/civic/faith state.
+- Build/protocol/content diagnostics are explicit; server version contract is now derived from `BUILD_INFO.json`.
+- Added map-bounded camera assertions and inventory-control assertions to the prepared Godot headless self-check.
+
 ## v0.7.1 — Native Windows authority hardening
 
 - Made the Godot Windows client the production path; browser/mobile remains proof-of-concept only.
