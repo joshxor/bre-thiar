@@ -1,0 +1,16 @@
+{
+  "name": "bre-thiar-authoritative-server",
+  "version": "0.7.1",
+  "private": true,
+  "description": "Bré Thiar authoritative server for the native Windows client",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "start:dev": "node server.mjs",
+    "check": "node --check server.mjs",
+    "test": "node --check server.mjs && node tests/windows-network-smoke.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
