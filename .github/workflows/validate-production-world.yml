@@ -37,6 +37,7 @@ jobs:
           python -m py_compile tools/search_git_history_provenance.py
           python -m py_compile tools/inventory_runtime_source_pack.py
           python -m py_compile tools/rebuild_runtime_cache_from_candidate.py
+          python -m py_compile tools/rebuild_world_atlases_from_source_packs.py
           python -m py_compile tools/validate_runtime_atlas_rebuild_contract.py
           python -m py_compile tools/diagnose_tiled_layer_lengths.py
           python -m py_compile tools/repair_tiled_layer_lengths.py
