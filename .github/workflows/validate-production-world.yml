@@ -13,8 +13,13 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out repository with full history
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all repository refs for recovery scan
+        run: git fetch --all --tags --prune
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -27,7 +32,11 @@ jobs:
       - name: Compile recovery tools
         run: |
           python -m py_compile tools/find_runtime_cache_recovery_candidates.py
+          python -m py_compile tools/find_git_history_cache_candidates.py
           python -m py_compile tools/rebuild_runtime_cache_from_candidate.py
+
+      - name: Scan full Git history for recovery candidates
+        run: python tools/find_git_history_cache_candidates.py
 
       - name: Diagnose runtime caches
         run: python tools/diagnose_runtime_caches.py
