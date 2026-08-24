@@ -12,9 +12,7 @@
       "format": "PNG",
       "size": [578, 336],
       "destination": "assets/runtime-v2/world_houses_atlas.b64",
-      "candidateSourcePacks": [
-        "MedievalVillageExteriorv1.0.zip"
-      ],
+      "candidateSourcePacks": ["MedievalVillageExteriorv1.0.zip"],
       "sourcePackStatus": "candidate_only_uninspected",
       "slots": [
         {"key":"house_blue","destinationRect":[0,0,288,336],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
@@ -25,10 +23,7 @@
       "format": "PNG",
       "size": [500, 294],
       "destination": "assets/runtime-v2/world_props_atlas.b64",
-      "candidateSourcePacks": [
-        "MedievalVillageExteriorv1.0.zip",
-        "Dark_Swamp_Starter_Pack_v1.0.zip"
-      ],
+      "candidateSourcePacks": ["MedievalVillageExteriorv1.0.zip","Dark_Swamp_Starter_Pack_v1.0.zip"],
       "sourcePackStatus": "candidate_only_uninspected",
       "slots": [
         {"key":"altar","destinationRect":[0,0,92,146],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
