@@ -34,6 +34,7 @@ jobs:
           python -m py_compile tools/find_runtime_cache_recovery_candidates.py
           python -m py_compile tools/find_git_history_cache_candidates.py
           python -m py_compile tools/inventory_git_history_images.py
+          python -m py_compile tools/search_git_history_provenance.py
           python -m py_compile tools/rebuild_runtime_cache_from_candidate.py
           python -m py_compile tools/diagnose_tiled_layer_lengths.py
           python -m py_compile tools/repair_tiled_layer_lengths.py
@@ -43,6 +44,9 @@ jobs:
 
       - name: Inventory historical image derivatives
         run: python tools/inventory_git_history_images.py
+
+      - name: Search historical asset provenance
+        run: python tools/search_git_history_provenance.py
 
       - name: Diagnose runtime caches
         run: python tools/diagnose_runtime_caches.py
