@@ -47,7 +47,13 @@ The current strongest compatible art source is the released Hypnobius **Medieval
 
 The approach remains sealed until the actual licensed source package is available for conversion. Do not substitute the legacy renderer, programmer-art dungeon tiles, flattened map imagery, or the older side-scroller Grungy Dungeon packs.
 
-The exact activation and asset-intake contract is documented in `docs/OLD_BARROW_INTERIOR_PRODUCTION_GATE.md`.
+The licensed package can be inspected without copying source art into the repository:
+
+```bash
+python tools/inspect_old_barrow_source_pack.py /path/to/source.zip
+```
+
+The exact activation and asset-intake contract is documented in `docs/OLD_BARROW_INTERIOR_PRODUCTION_GATE.md`. The save-compatible second-act quest contract is documented in `docs/OLD_ROAD_ACT_II_CONTRACT.md`.
 
 ## Current playable quest
 
@@ -60,6 +66,8 @@ The exact activation and asset-intake contract is documented in `docs/OLD_BARROW
 5. Complete the quest and receive the Rowan Charm.
 
 Quest progress is stored with the current local QA save state and is shown in the in-game menu.
+
+Act II remains dormant while the barrow is sealed. When the production interior activates, existing stage-4 Rowan Charm saves must migrate forward instead of being reset or re-rewarded.
 
 ## Current QA runtime
 
@@ -89,13 +97,14 @@ python -m pip install Pillow
 python tools/validate_hypnobius_integration.py
 python tools/validate_world_continuity.py
 python tools/validate_old_road_quest.py
+python tools/validate_old_road_act2_contract.py
 python tools/validate_old_barrow_interior_readiness.py
 python tools/validate_render_profiles.py
 ```
 
-The validators cover asset-cache decoding, map geometry/layers/GIDs, world-object atlas rectangles, collision/spawn/exit contracts, all eight class/gender direction strips, reciprocal connected-zone transitions, the Old Road quest dependency chain, the Old Barrow sealed/active production contract, and zone-to-render-profile compatibility.
+The validators cover asset-cache decoding, map geometry/layers/GIDs, world-object atlas rectangles, collision/spawn/exit contracts, all eight class/gender direction strips, reciprocal connected-zone transitions, the Old Road quest dependency chain, save-compatible Act II activation, the Old Barrow sealed/active production contract, and zone-to-render-profile compatibility.
 
-The Old Barrow readiness validator is intentionally state-aware. While no production interior is registered it verifies that the threshold remains safely sealed; once `old_barrow_interior` is registered it requires a real interior map, production art metadata, valid map-backed layers/spawns, reciprocal routing, and removal of the exterior gate collision.
+The Old Barrow and Act II validators are intentionally state-aware. While no production interior is registered they verify that the threshold remains safely sealed and the shipped stage-4 Rowan Charm completion remains authoritative; once `old_barrow_interior` is registered they require a real interior map, production art metadata, valid map-backed layers/spawns, reciprocal routing, save migration, map-backed Act II objectives/encounter metadata, and removal of the exterior gate collision.
 
 ## Project rules
 
