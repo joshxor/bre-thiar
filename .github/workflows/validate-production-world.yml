@@ -24,6 +24,9 @@ jobs:
       - name: Install validation dependency
         run: python -m pip install Pillow
 
+      - name: Diagnose runtime caches
+        run: python tools/diagnose_runtime_caches.py
+
       - name: Validate production asset integration
         run: python tools/validate_hypnobius_integration.py
 
