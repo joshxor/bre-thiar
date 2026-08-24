@@ -4,7 +4,7 @@ import json
 
 ROOT = Path(__file__).resolve().parents[1]
 MAPS = ROOT / "maps"
-RUNTIME = ROOT / "bre-thiar-world-live-v3.js"
+RUNTIME = ROOT / "bre-thiar-world-live-v4.js"
 
 required_maps = {
     "bre_thiar": "Bre_Thiar_Village_Hub_v1.tmj",
@@ -64,6 +64,7 @@ if "walk/combat cycles are not faked" not in src:
     raise SystemExit("Animation honesty contract missing")
 
 print("OLD ROAD QUEST VALIDATION PASSED")
+print("Runtime: bre-thiar-world-live-v4.js")
 print("Route: Bré Thiar -> Rowanwood Verge -> Old Barrow Approach")
 print("Stages: Eira -> Old Rowan -> Barrow Threshold")
 print("Reward: Rowan Charm")

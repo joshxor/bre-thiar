@@ -1,5 +1,5 @@
 {
-  "version": "bre-thiar-hypnobius-v3.0",
+  "version": "bre-thiar-hypnobius-v4.0",
   "map": "maps/Bre_Thiar_Village_Hub_v1.tmj",
   "terrain": {
     "atlas": "props",
@@ -12,6 +12,25 @@
     "sourceTileWidth": 48,
     "sourceTileHeight": 48,
     "columns": 5
+  },
+  "renderProfiles": {
+    "hypnobius_outdoor_v1": {
+      "tileLayers": [
+        "Ground",
+        "Swamp",
+        "Roads"
+      ],
+      "worldTilesetMatch": "world_objects",
+      "worldFirstGid": 6,
+      "terrainGids": [
+        1,
+        5
+      ],
+      "worldGids": [
+        6,
+        19
+      ]
+    }
   },
   "worldAtlases": {
     "houses": {
@@ -297,24 +316,28 @@
   "notes": {
     "animation": "Four-direction static presentation. True walk/combat cycles remain pending.",
     "source": "Runtime caches are production-derived implementation assets. Original Hypnobius source archives are not redistributed by this repository.",
-    "worldContinuity": "Bré Thiar north exit connects to Rowanwood Verge; Rowanwood north exit connects to Old Barrow Approach. Old Barrow interior remains pending art conversion."
+    "worldContinuity": "Bré Thiar north exit connects to Rowanwood Verge; Rowanwood north exit connects to Old Barrow Approach. Old Barrow interior remains pending art conversion.",
+    "renderProfiles": "Zones now select render profiles so future production interiors can use their own tile layers and world-object mapping without changing the outdoor maps."
   },
   "startZone": "bre_thiar",
   "zones": {
     "bre_thiar": {
       "name": "Bré Thiar",
       "map": "maps/Bre_Thiar_Village_Hub_v1.tmj",
-      "defaultSpawn": "Player Spawn"
+      "defaultSpawn": "Player Spawn",
+      "renderProfile": "hypnobius_outdoor_v1"
     },
     "rowanwood": {
       "name": "Rowanwood Verge",
       "map": "maps/Rowanwood_Verge_v1.tmj",
-      "defaultSpawn": "South Entry"
+      "defaultSpawn": "South Entry",
+      "renderProfile": "hypnobius_outdoor_v1"
     },
     "old_barrow_approach": {
       "name": "Old Barrow Approach",
       "map": "maps/Old_Barrow_Approach_v1.tmj",
-      "defaultSpawn": "South Entry"
+      "defaultSpawn": "South Entry",
+      "renderProfile": "hypnobius_outdoor_v1"
     }
   }
 }
