@@ -21,6 +21,7 @@ Create the codespace from `main`. The checked-in dev-container automatically sta
 - Wayfarer, Iron Warden, Trail Ranger, and Runekeeper are available in male/female variants
 - Four real directional views per current character; walk/combat/cast cycles are not fabricated
 - Independent world objects, NPC/player entities, collisions, spawns, POIs, and map-backed exits
+- Zone-selected render profiles so future production interiors can use their own authored tile layers and object mappings without changing the outdoor maps
 
 ## Connected production world
 
@@ -62,7 +63,9 @@ Quest progress is stored with the current local QA save state and is shown in th
 
 ## Current QA runtime
 
-`play.html` loads `bre-thiar-world-live-v3.js`, reconstructs the checked-in Hypnobius world atlases and character atlases in-browser, loads the active Tiled map by zone, derives collision/spawns/exits from map data, supports keyboard/touch movement, class/gender switching, persistent quest/world state, interaction prompts, and Y-sorted world-object/NPC/player rendering.
+`play.html` loads `bre-thiar-world-live-v4.js`, reconstructs the checked-in Hypnobius world atlases and character atlases in-browser, loads the active Tiled map by zone, selects that zone's render profile, derives collision/spawns/exits from map data, supports keyboard/touch movement, class/gender switching, persistent quest/world state, interaction prompts, and Y-sorted world-object/NPC/player rendering.
+
+The current three zones all use `hypnobius_outdoor_v1`, which preserves the existing `Ground` / `Swamp` / `Roads` terrain layers and outdoor `world_objects` mapping exactly. A future Old Barrow Interior profile can supply different authored tile-layer names and world-object mappings without hard-wiring dungeon art into the outdoor renderer.
 
 The generated concept map is **not** used as a runtime background texture. The playable world is reconstructed from actual game assets and authoritative map data.
 
@@ -87,9 +90,10 @@ python tools/validate_hypnobius_integration.py
 python tools/validate_world_continuity.py
 python tools/validate_old_road_quest.py
 python tools/validate_old_barrow_interior_readiness.py
+python tools/validate_render_profiles.py
 ```
 
-The validators cover asset-cache decoding, map geometry/layers/GIDs, world-object atlas rectangles, collision/spawn/exit contracts, all eight class/gender direction strips, reciprocal connected-zone transitions, the Old Road quest dependency chain, and the Old Barrow sealed/active production contract.
+The validators cover asset-cache decoding, map geometry/layers/GIDs, world-object atlas rectangles, collision/spawn/exit contracts, all eight class/gender direction strips, reciprocal connected-zone transitions, the Old Road quest dependency chain, the Old Barrow sealed/active production contract, and zone-to-render-profile compatibility.
 
 The Old Barrow readiness validator is intentionally state-aware. While no production interior is registered it verifies that the threshold remains safely sealed; once `old_barrow_interior` is registered it requires a real interior map, production art metadata, valid map-backed layers/spawns, reciprocal routing, and removal of the exterior gate collision.
 
