@@ -31,6 +31,31 @@ The dedicated Hypnobius **Top-Down Dungeon Interior Tileset** is still listed as
 
 The older Hypnobius Grungy Dungeon wall/floor/props series is a side-scroller/platformer family and must **not** be treated as the production Old Barrow solution.
 
+## Licensed source-package inspection
+
+The purchased/source archive must remain outside the repository. Before any conversion, inspect it read-only:
+
+```bash
+python tools/inspect_old_barrow_source_pack.py /path/to/Medieval_Interior_Starter_Tileset_v1.0.zip
+```
+
+For machine-readable output:
+
+```bash
+python tools/inspect_old_barrow_source_pack.py /path/to/source.zip --json
+```
+
+The inspector:
+
+- accepts a ZIP archive or extracted directory;
+- decodes PNGs without writing them into the repository;
+- records the archive SHA-256 when a ZIP is supplied;
+- reports image dimensions and 48px-grid alignment;
+- exits nonzero if no usable 48px-grid PNG candidate is present;
+- never creates runtime caches or commits source art.
+
+A successful inspection is **not** permission to blindly ingest every image. It only establishes the actual package geometry so the conversion can be authored against verified files instead of guessed filenames or layouts.
+
 ## Asset intake rule
 
 Do not add an interior zone to `bre-thiar-assets-v2.json` until the actual licensed source package is available for conversion.
@@ -38,14 +63,15 @@ Do not add an interior zone to `bre-thiar-assets-v2.json` until the actual licen
 When source art is available:
 
 1. Keep the original purchased/source archive outside the repository.
-2. Convert only the runtime material required by the game into the existing production-derived cache workflow.
-3. Preserve the source-family scale: 48×48 source art → 96×96 runtime world cells.
-4. Do not shrink or redraw the established 128×160 player characters to make the environment fit.
-5. Create the canonical map as `maps/Old_Barrow_Interior_v1.tmj`.
-6. Keep collision, spawns, exits, POIs, encounters, and objective triggers map-backed.
-7. Register the new zone as `old_barrow_interior` only after its map and runtime art actually load.
-8. Replace the exterior seal collision with a reciprocal approach/interior exit only in the same production change that activates the interior.
-9. Re-run the existing world, quest, art, and interior-readiness validators before merge.
+2. Run `tools/inspect_old_barrow_source_pack.py` and record the package/file geometry used for the conversion.
+3. Convert only the runtime material required by the game into the existing production-derived cache workflow.
+4. Preserve the source-family scale: 48×48 source art → 96×96 runtime world cells.
+5. Do not shrink or redraw the established 128×160 player characters to make the environment fit.
+6. Create the canonical map as `maps/Old_Barrow_Interior_v1.tmj`.
+7. Keep collision, spawns, exits, POIs, encounters, and objective triggers map-backed.
+8. Register the new zone as `old_barrow_interior` only after its map and runtime art actually load.
+9. Replace the exterior seal collision with a reciprocal approach/interior exit only in the same production change that activates the interior.
+10. Re-run the existing world, quest, art, render-profile, Act II, and interior-readiness validators before merge.
 
 ## Interior gameplay target
 
@@ -60,6 +86,8 @@ Target structure:
 - **Sealed Deeper Route** — an authored endpoint that can later connect to additional barrow depth without pretending unfinished content already exists.
 
 Exact encounter scripting remains downstream of the environment conversion. The environment must first be visually credible, collision-safe, and fully connected in the production renderer.
+
+The save migration, quest-step metadata, and Stonebound Warden trigger requirements are authoritative in `docs/OLD_ROAD_ACT_II_CONTRACT.md`.
 
 ## Activation contract
 
@@ -78,6 +106,8 @@ Once `old_barrow_interior` is registered, `tools/validate_old_barrow_interior_re
 - a reciprocal route from the interior back to Old Barrow Approach
 - removal of the exterior `Old Barrow Seal Footprint` / `barrow_gate` collision once the interior is live
 
+The same activation change must also pass `tools/validate_old_road_act2_contract.py`. Opening the route without the Act II save migration and map-backed quest/encounter triggers is considered incomplete production wiring.
+
 ## Do not resurrect
 
 The following are explicitly rejected for this production target:
@@ -89,5 +119,6 @@ The following are explicitly rejected for this production target:
 - side-scroller dungeon art repurposed as if it were a top-down interior set
 - painted-in NPCs or enemies
 - hard-coded collision that diverges from the Tiled map
+- quest-state resets that invalidate existing stage-4 Rowan Charm saves
 
-The barrow should remain closed longer rather than open at a lower visual or architectural standard.
+The barrow should remain closed longer rather than open at a lower visual, architectural, or save-compatibility standard.
