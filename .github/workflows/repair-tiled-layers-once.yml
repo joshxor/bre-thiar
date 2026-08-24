@@ -1,0 +1,40 @@
+name: Repair Tiled layers once
+
+on:
+  push:
+    branches:
+      - repair-production-baseline-v2
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repair branch
+        uses: actions/checkout@v4
+        with:
+          ref: repair-production-baseline-v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply guarded Tiled repair
+        run: |
+          python tools/repair_tiled_layer_lengths.py --write
+          python tools/repair_tiled_layer_lengths.py
+
+      - name: Commit repaired maps when changed
+        run: |
+          if git diff --quiet -- maps/Rowanwood_Verge_v1.tmj maps/Old_Barrow_Approach_v1.tmj; then
+            echo "No map changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add maps/Rowanwood_Verge_v1.tmj maps/Old_Barrow_Approach_v1.tmj
+          git commit -m "Normalize production Tiled layer lengths"
+          git push origin HEAD:repair-production-baseline-v2
