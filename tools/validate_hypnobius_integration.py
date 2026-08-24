@@ -126,8 +126,10 @@ if len(layers.get("Collision", {}).get("objects", [])) != 6:
 triggers = layers.get("Spawns & Triggers", {}).get("objects", [])
 spawns = [o for o in triggers if o.get("type") == "spawn"]
 exits = [o for o in triggers if o.get("type") == "exit"]
-if len(spawns) != 1:
-    fail(f"expected one player spawn, got {len(spawns)}")
+spawn_names = {o.get("name") for o in spawns}
+expected_spawn_names = {"Player Spawn", "North Arrival"}
+if spawn_names != expected_spawn_names:
+    fail(f"canonical village spawns must be {sorted(expected_spawn_names)}, got {sorted(spawn_names)}")
 if len(exits) != 4:
     fail(f"expected four cardinal exits, got {len(exits)}")
 
@@ -139,6 +141,6 @@ if errors:
 
 print("BRE THIAR HYPNOBIUS INTEGRATION: PASS")
 print("- 14x8 Tiled village at 96px runtime grid")
-print("- 22 placed world objects / 6 collision regions / 4 exits")
+print("- 22 placed world objects / 6 collision regions / 2 named spawns / 4 exits")
 print("- world caches decode and rects are in bounds")
 print("- all 8 canonical class/gender direction strips decode with 4 non-empty directions")
