@@ -1,12 +1,51 @@
 'use strict';
-const BUILD='hypnobius-world-v3.0';
+const BUILD='hypnobius-world-v3.1';
 const $=id=>document.getElementById(id),canvas=$('g'),ctx=canvas.getContext('2d');
 ctx.imageSmoothingEnabled=false;
 let VW=innerWidth,VH=innerHeight,DPR=1,run=false,ready=false,last=0,map=null,manifest=null,zoneId='bre_thiar';
 let worldAtlases={},characterAtlases={},held=new Set(),toastTimer=0,transitioning=false,entryLock=0;
 let player={x:690,y:540,f:'down',cls:'wayfarer',gender:'male',hp:100,zone:'bre_thiar'};
+let quest={id:'old_road',title:'The Old Road',status:'available',stage:0,reward:null};
 let collisions=[],triggers=[],worldObjects=[];
 const classLabels={wayfarer:'Wayfarer',iron_warden:'Iron Warden',trail_ranger:'Trail Ranger',runekeeper:'Runekeeper'};
+function questObjective(){
+  if(quest.status==='completed')return 'Complete — the Old Barrow seal has awakened. The interior expedition remains closed until its production-art conversion is ready.';
+  if(quest.stage===0)return 'Speak with Eira in Bré Thiar.';
+  if(quest.stage===1)return 'Take the north road into Rowanwood Verge.';
+  if(quest.stage===2)return 'Find and inspect the Old Rowan in Rowanwood Verge.';
+  if(quest.stage===3)return 'Reach the Old Barrow Approach and examine the Barrow Threshold.';
+  return 'Follow the old road north.'
+}
+function updateQuestUI(){
+  const box=document.getElementById('questjournal');if(!box)return;
+  const state=quest.status==='completed'?'Completed':quest.status==='active'?'Active':'Available';
+  box.innerHTML='<h3 style="color:#d7b85e;margin:14px 0 7px">Quest · '+quest.title+'</h3>'
+    +'<div style="font:12px/1.45 system-ui;color:#cfc4a8"><b>'+state+'</b><br>'+questObjective()
+    +(quest.reward?'<br><span style="color:#d7b85e">Reward: '+quest.reward+'</span>':'')+'</div>'
+}
+function setupQuestMenu(){
+  const panel=document.querySelector('#sheet .panel');
+  if(!panel||document.getElementById('questjournal'))return;
+  const box=document.createElement('div');box.id='questjournal';
+  panel.insertBefore(box,$('reset'));updateQuestUI()
+}
+function questOnZoneEntered(id){
+  if(quest.status==='active'&&quest.stage===1&&id==='rowanwood'){
+    quest.stage=2;toast('The Old Road · Find the Old Rowan');updateQuestUI()
+  }
+}
+function advanceQuest(n){
+  if(quest.status==='available'&&quest.stage===0&&zoneId==='bre_thiar'&&n.kind==='npc'&&n.name==='Eira'){
+    quest.status='active';quest.stage=1;save();updateQuestUI();toast('Quest started · The Old Road');return ' She asks you to follow the north road into Rowanwood Verge.';
+  }
+  if(quest.status==='active'&&quest.stage===2&&zoneId==='rowanwood'&&n.kind==='poi'&&n.name==='Old Rowan'){
+    quest.stage=3;save();updateQuestUI();toast('The Old Road · The barrow is calling');return ' Beneath the charms, one fresh red cord points north toward the barrow.';
+  }
+  if(quest.status==='active'&&quest.stage===3&&zoneId==='old_barrow_approach'&&n.kind==='poi'&&n.name==='Barrow Threshold'){
+    quest.status='completed';quest.stage=4;quest.reward='Rowan Charm';save();updateQuestUI();toast('Quest complete · The Old Road');return ' The seal answers your touch. A small rowan charm warms in your hand.';
+  }
+  return ''
+}
 const zoneNPCDefinitions={
   bre_thiar:[
     {name:'Brannoc',cls:'iron_warden',gender:'male',x:610,y:448,f:'down',text:'The north road climbs into Rowanwood. Keep your blade close after dusk.'},
@@ -64,7 +103,7 @@ async function loadZone(id,spawnName=null,opts={}){
     if(!s)throw new Error('Missing spawn '+(spawnName||spec.defaultSpawn)+' in '+id);
     player.x=s.x;player.y=s.y;player.f=facingFromSpawn(s);
   }
-  entryLock=performance.now()+900;transitioning=false;save();updateIdentity();updateZoneLabel();
+  questOnZoneEntered(id);entryLock=performance.now()+900;transitioning=false;save();updateIdentity();updateZoneLabel();updateQuestUI();
   if(!opts.silent)toast(spec.name)
 }
 function restoreState(){
@@ -82,15 +121,17 @@ async function load(){
     for(const[name,s]of Object.entries(manifest.characterAtlases))characterAtlases[name]=await cachedImage(s);
     const saved=restoreState();
     if(saved){
-      player={...player,...saved};
-      await loadZone(saved.zone,null,{position:saved,silent:true});
+      if(saved.quest)quest={...quest,...saved.quest};
+      const savedPlayer={...saved};delete savedPlayer.quest;
+      player={...player,...savedPlayer};
+      await loadZone(saved.zone,null,{position:savedPlayer,silent:true});
       if(blocked(player.x,player.y)){
         await loadZone(saved.zone,manifest.zones[saved.zone].defaultSpawn,{silent:true});
       }
     }else{
       await loadZone(manifest.startZone||'bre_thiar',null,{silent:true});
     }
-    setupClassMenu();setupWorldMenu();ready=true;$('enter').disabled=false;
+    setupQuestMenu();setupClassMenu();setupWorldMenu();ready=true;$('enter').disabled=false;
     $('status').textContent='Ready — Bré Thiar → Rowanwood Verge → Old Barrow Approach'
   }catch(e){console.error(e);$('status').textContent='Load failed — '+e.message}
 }
@@ -123,7 +164,7 @@ function updateIdentity(){
 }
 function updateZoneLabel(){if($('zone'))$('zone').textContent=zoneInfo()?.name||zoneId}
 function save(){
-  localStorage.setItem('bre-thiar-hypnobius-v3',JSON.stringify({x:player.x,y:player.y,f:player.f,cls:player.cls,gender:player.gender,hp:player.hp,zone:zoneId}))
+  localStorage.setItem('bre-thiar-hypnobius-v3',JSON.stringify({x:player.x,y:player.y,f:player.f,cls:player.cls,gender:player.gender,hp:player.hp,zone:zoneId,quest}))
 }
 function blocked(x,y){
   const hw=14,top=8,bot=5,mw=map.width*map.tilewidth,mh=map.height*map.tileheight;
@@ -204,7 +245,8 @@ function render(){
   for(const o of worldObjects)items.push({y:o.y,k:'o',v:o});
   for(const p of zoneNPCs())items.push({y:p.y,k:'c',v:p});
   items.push({y:player.y,k:'p',v:player});items.sort((a,b)=>a.y-b.y);
-  for(const it of items)it.k==='o'?drawWorld(it.v,c):drawCharacter(it.v,c,it.k==='p')
+  for(const it of items)it.k==='o'?drawWorld(it.v,c):drawCharacter(it.v,c,it.k==='p');
+  const n=nearestTalkable(),pr=$('prompt');if(pr){pr.classList.toggle('hide',!n);if(n)pr.textContent=(n.kind==='poi'?'Inspect ':'Talk to ')+n.name}
 }
 function frame(t){if(!run)return;const dt=Math.min(.034,(t-last)/1000||0);last=t;move(dt);render();requestAnimationFrame(frame)}
 function poiText(name){
@@ -220,14 +262,14 @@ function poiText(name){
 }
 function nearestTalkable(){
   const c=[
-    ...zoneNPCs().map(n=>({...n})),
-    ...triggers.filter(t=>t.type==='poi').map(t=>({name:t.name,x:t.x,y:t.y,text:poiText(t.name)}))
+    ...zoneNPCs().map(n=>({...n,kind:'npc'})),
+    ...triggers.filter(t=>t.type==='poi').map(t=>({name:t.name,x:t.x,y:t.y,text:poiText(t.name),kind:'poi'}))
   ];
   let b=null,d=1e9;for(const n of c){const q=Math.hypot(player.x-n.x,player.y-n.y);if(q<d){d=q;b=n}}return d<165?b:null
 }
 function talk(){
   const n=nearestTalkable();if(!n)return toast('Nothing close enough to inspect or talk to.');
-  $('dn').textContent=n.name;$('dt').textContent=n.text;$('dialog').classList.remove('hide')
+  const extra=advanceQuest(n);$('dn').textContent=n.name;$('dt').textContent=n.text+extra;$('dialog').classList.remove('hide')
 }
 function attack(){toast(classLabels[player.cls]+' combat animation set is not authored yet.')}
 function toast(s){const e=$('toast');e.textContent=s;e.classList.remove('hide');clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.add('hide'),1700)}
@@ -245,8 +287,8 @@ $('close').addEventListener('click',()=>$('sheet').classList.add('hide'));
 $('dc').addEventListener('click',()=>$('dialog').classList.add('hide'));
 $('oldworld')?.addEventListener('click',()=>location.href='legacy-world.html');
 $('reset').addEventListener('click',async()=>{
-  held.clear();localStorage.removeItem('bre-thiar-hypnobius-v3');$('sheet').classList.add('hide');
-  await loadZone(manifest.startZone||'bre_thiar',manifest.zones[manifest.startZone||'bre_thiar'].defaultSpawn);toast('World position reset')
+  held.clear();localStorage.removeItem('bre-thiar-hypnobius-v3');quest={id:'old_road',title:'The Old Road',status:'available',stage:0,reward:null};$('sheet').classList.add('hide');
+  await loadZone(manifest.startZone||'bre_thiar',manifest.zones[manifest.startZone||'bre_thiar'].defaultSpawn);updateQuestUI();toast('World and quest progress reset')
 });
 $('enter').addEventListener('click',()=>{if(!ready)return;$('splash').classList.add('hide');run=true;last=performance.now();requestAnimationFrame(frame)});
 load();
