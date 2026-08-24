@@ -2,7 +2,7 @@
 """Static validation for the Bré Thiar Hypnobius/Tiled village integration."""
 from pathlib import Path
 from PIL import Image
-import base64, io, json, sys
+import base64, io, json, string, sys
 
 ROOT = Path(__file__).resolve().parents[1]
 errors = []
@@ -10,12 +10,40 @@ errors = []
 def fail(msg):
     errors.append(msg)
 
+def diagnose_cache_text(paths, text):
+    allowed=set(string.ascii_letters+string.digits+"+/=")
+    invalid=[(i,ord(ch)) for i,ch in enumerate(text) if ch not in allowed]
+    print(f"CACHE DIAGNOSTIC {paths}: chars={len(text)} mod4={len(text)%4} invalid_count={len(invalid)}")
+    if invalid:
+        print(f"- invalid positions/codepoints (first 8): {invalid[:8]}")
+    successes=[]
+    for cut in range(0,5):
+        candidate=text[:-cut] if cut else text
+        for pad_count in range(0,4):
+            trial=candidate+("="*pad_count)
+            try:
+                data=base64.b64decode(trial,validate=True)
+                with Image.open(io.BytesIO(data)) as im:
+                    im.load()
+                    successes.append((cut,pad_count,im.format,im.size,im.mode,len(data)))
+            except Exception:
+                pass
+    if successes:
+        for item in successes[:8]:
+            print(f"- image decodes with cut={item[0]} pad={item[1]}: format={item[2]} size={item[3]} mode={item[4]} bytes={item[5]}")
+    else:
+        print("- no valid image found with cut<=4 and pad<=3")
+
 def decoded_spec(spec: dict) -> bytes:
     paths = spec.get("parts") or [spec["cache"]]
     try:
         text = "".join("".join((ROOT / p).read_text().split()) for p in paths)
         return base64.b64decode(text, validate=True)
     except Exception as exc:
+        try:
+            diagnose_cache_text(paths,text)
+        except Exception as diag_exc:
+            print(f"CACHE DIAGNOSTIC FAILED {paths}: {diag_exc}")
         fail(f"cache decode failed for {paths}: {exc}")
         return b""
 
@@ -126,8 +154,9 @@ if len(layers.get("Collision", {}).get("objects", [])) != 6:
 triggers = layers.get("Spawns & Triggers", {}).get("objects", [])
 spawns = [o for o in triggers if o.get("type") == "spawn"]
 exits = [o for o in triggers if o.get("type") == "exit"]
-if len(spawns) != 1:
-    fail(f"expected one player spawn, got {len(spawns)}")
+spawn_names = {o.get("name") for o in spawns}
+if spawn_names != {"Player Spawn", "North Arrival"}:
+    fail(f"canonical village spawns mismatch: {sorted(spawn_names)}")
 if len(exits) != 4:
     fail(f"expected four cardinal exits, got {len(exits)}")
 
@@ -139,6 +168,6 @@ if errors:
 
 print("BRE THIAR HYPNOBIUS INTEGRATION: PASS")
 print("- 14x8 Tiled village at 96px runtime grid")
-print("- 22 placed world objects / 6 collision regions / 4 exits")
+print("- 22 placed world objects / 6 collision regions / 2 named spawns / 4 exits")
 print("- world caches decode and rects are in bounds")
 print("- all 8 canonical class/gender direction strips decode with 4 non-empty directions")
