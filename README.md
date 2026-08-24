@@ -38,6 +38,16 @@ Returning south reverses those connections. The Old Barrow interior is intention
 
 The previous native-grid Bré Thiar / Rowanwood / Old Barrow QA remains available at `legacy-world.html` for regression comparison only.
 
+## Old Barrow Interior production gate
+
+`Old Barrow Interior` is the next hard production target, but it is not registered as a live zone yet.
+
+The current strongest compatible art source is the released Hypnobius **Medieval Interior - Starter RPG Tileset**: it uses the same 48×48 source scale, is explicitly top-down/Tiled-friendly, and matches the established medieval/Gothic production family. The dedicated Hypnobius **Top-Down Dungeon Interior Tileset** is still in development and is not treated as a shippable dependency.
+
+The approach remains sealed until the actual licensed source package is available for conversion. Do not substitute the legacy renderer, programmer-art dungeon tiles, flattened map imagery, or the older side-scroller Grungy Dungeon packs.
+
+The exact activation and asset-intake contract is documented in `docs/OLD_BARROW_INTERIOR_PRODUCTION_GATE.md`.
+
 ## Current playable quest
 
 `The Old Road` is the first persistent cross-zone quest in the production-art world:
@@ -76,9 +86,12 @@ python -m pip install Pillow
 python tools/validate_hypnobius_integration.py
 python tools/validate_world_continuity.py
 python tools/validate_old_road_quest.py
+python tools/validate_old_barrow_interior_readiness.py
 ```
 
-The validators cover asset-cache decoding, map geometry/layers/GIDs, world-object atlas rectangles, collision/spawn/exit contracts, all eight class/gender direction strips, reciprocal connected-zone transitions, and the Old Road quest dependency chain.
+The validators cover asset-cache decoding, map geometry/layers/GIDs, world-object atlas rectangles, collision/spawn/exit contracts, all eight class/gender direction strips, reciprocal connected-zone transitions, the Old Road quest dependency chain, and the Old Barrow sealed/active production contract.
+
+The Old Barrow readiness validator is intentionally state-aware. While no production interior is registered it verifies that the threshold remains safely sealed; once `old_barrow_interior` is registered it requires a real interior map, production art metadata, valid map-backed layers/spawns, reciprocal routing, and removal of the exterior gate collision.
 
 ## Project rules
 
