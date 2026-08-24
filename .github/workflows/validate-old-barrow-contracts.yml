@@ -1,0 +1,46 @@
+name: Validate Old Barrow contracts
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate-old-barrow-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile Old Barrow tools
+        run: |
+          python -m py_compile tools/inspect_old_barrow_source_pack.py
+          python -m py_compile tools/validate_old_road_act2_contract.py
+          python -m py_compile tools/validate_old_barrow_interior_readiness.py
+
+      - name: Validate connected world continuity
+        run: python tools/validate_world_continuity.py
+
+      - name: Validate The Old Road Act I
+        run: python tools/validate_old_road_quest.py
+
+      - name: Validate The Old Road Act II state contract
+        run: python tools/validate_old_road_act2_contract.py
+
+      - name: Validate Old Barrow sealed or active state
+        run: python tools/validate_old_barrow_interior_readiness.py
+
+      - name: Validate zone render profiles
+        run: python tools/validate_render_profiles.py
+
+      - name: Validate active JavaScript runtime syntax
+        run: node --check bre-thiar-world-live-v4.js
