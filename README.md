@@ -15,20 +15,46 @@ Create the codespace from `main`. The checked-in dev-container automatically sta
 ## Current production-art baseline
 
 - Browser/Canvas client with map-backed movement and collision
-- Canonical Bré Thiar village map: `maps/Bre_Thiar_Village_Hub_v1.tmj`
 - Approved Hypnobius medieval village/cabin/swamp art family implemented as production-derived runtime caches
 - 96px runtime world cells from the source 48px world family
 - Current 128×160 player sprites remain unchanged
 - Wayfarer, Iron Warden, Trail Ranger, and Runekeeper are available in male/female variants
 - Four real directional views per current character; walk/combat/cast cycles are not fabricated
-- Independent world objects, NPC/player entities, collisions, spawn point, POIs, and four cardinal exits
-- Rowanwood / Old Barrow previous native-grid QA retained at `legacy-world.html`
+- Independent world objects, NPC/player entities, collisions, spawns, POIs, and map-backed exits
+
+## Connected production world
+
+The active QA runtime uses three connected canonical Tiled maps:
+
+- `maps/Bre_Thiar_Village_Hub_v1.tmj`
+- `maps/Rowanwood_Verge_v1.tmj`
+- `maps/Old_Barrow_Approach_v1.tmj`
+
+World continuity is:
+
+`Bré Thiar` north exit → `Rowanwood Verge` south entry → `Old Barrow Approach` south entry
+
+Returning south reverses those connections. The Old Barrow interior is intentionally not routed back into legacy art; the threshold remains closed until that interior receives its own compatible production-art conversion.
+
+The previous native-grid Bré Thiar / Rowanwood / Old Barrow QA remains available at `legacy-world.html` for regression comparison only.
+
+## Current playable quest
+
+`The Old Road` is the first persistent cross-zone quest in the production-art world:
+
+1. Speak with Eira in Bré Thiar.
+2. Take the north road into Rowanwood Verge.
+3. Find and inspect the Old Rowan.
+4. Reach the Old Barrow Approach and examine the Barrow Threshold.
+5. Complete the quest and receive the Rowan Charm.
+
+Quest progress is stored with the current local QA save state and is shown in the in-game menu.
 
 ## Current QA runtime
 
-`play.html` is the current Bré Thiar village QA entry point. It loads the canonical Tiled map, reconstructs the checked-in Hypnobius world atlases and character atlases in-browser, derives collision/spawns from map data, supports keyboard/touch movement, class/gender switching, local position persistence, interaction, and Y-sorted world-object/player rendering.
+`play.html` loads `bre-thiar-world-live-v3.js`, reconstructs the checked-in Hypnobius world atlases and character atlases in-browser, loads the active Tiled map by zone, derives collision/spawns/exits from map data, supports keyboard/touch movement, class/gender switching, persistent quest/world state, interaction prompts, and Y-sorted world-object/NPC/player rendering.
 
-The generated concept map is **not** used as a runtime background texture. The playable village is reconstructed from actual game assets and authoritative map data.
+The generated concept map is **not** used as a runtime background texture. The playable world is reconstructed from actual game assets and authoritative map data.
 
 ## Tiled editing
 
@@ -39,22 +65,20 @@ python -m pip install Pillow
 python tools/materialize_tiled_assets.py
 ```
 
-Then open:
-
-```text
-maps/Bre_Thiar_Village_Hub_v1.tmj
-```
+Then open any canonical `.tmj` map under `maps/`.
 
 ## Validation
 
-Run the integration validator before changing or shipping the village package:
+Run the validators before changing or shipping the production-art world package:
 
 ```bash
 python -m pip install Pillow
 python tools/validate_hypnobius_integration.py
+python tools/validate_world_continuity.py
+python tools/validate_old_road_quest.py
 ```
 
-The validator checks map geometry/layers/GIDs, world-cache decoding and atlas rectangles, collision/spawn/exit contracts, and all eight class/gender direction strips.
+The validators cover asset-cache decoding, map geometry/layers/GIDs, world-object atlas rectangles, collision/spawn/exit contracts, all eight class/gender direction strips, reciprocal connected-zone transitions, and the Old Road quest dependency chain.
 
 ## Project rules
 
@@ -64,5 +88,6 @@ The validator checks map geometry/layers/GIDs, world-cache decoding and atlas re
 - NPCs and monsters are entities, never painted into canonical environment art.
 - Collision must remain derived from authoritative map data.
 - The 128×160 character art is not shrunk to solve environment scale; world art scales around the characters.
+- Do not route a converted production-art zone into the legacy renderer just to make a connection look complete; convert the next zone first, then open the route.
 - Programmer-art/debug-looking maps are not acceptable as finished content.
 - Do not change repository visibility merely to enable testing.
