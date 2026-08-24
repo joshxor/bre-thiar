@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "purpose": "Authoritative output layout and verified source provenance for reconstructing corrupted Bré Thiar runtime atlases without guessed pixels or source crops.",
+  "rules": [
+    "Original vendor/source archives remain outside the repository.",
+    "Do not use flattened screenshots, generated pixels, legacy mobile composites, or guessed crops.",
+    "World source mappings below were verified from the authentic user-supplied archives on 2026-08-24.",
+    "Derived cache output must preserve the current manifest geometry so active maps and runtime code do not need art-placement changes solely for recovery.",
+    "Wayfarer / Iron Warden source provenance remains unresolved and must not be inferred from the Hypnobius world packs."
+  ],
+  "sourcePacks": {
+    "medieval_village_exterior": {
+      "filename": "MedievalVillageExteriorv1.0.zip",
+      "sha256": "9283c11a67b13c7a2254e19551995d9743b8606d339890c0a268b6082fca7468",
+      "status": "verified_received",
+      "repositoryPolicy": "source archive stays outside repository"
+    },
+    "dark_swamp_starter": {
+      "filename": "Dark_Swamp_Starter_Pack_v1.0.zip",
+      "sha256": "43cb4478dd3b4f80cf9f8e58f66bf68f4e08d37e2618f5d5ee3d9cae5dcf660e",
+      "status": "verified_received",
+      "repositoryPolicy": "source archive stays outside repository"
+    }
+  },
+  "targets": {
+    "world_houses_atlas": {
+      "format": "PNG",
+      "size": [578, 336],
+      "destination": "assets/runtime-v2/world_houses_atlas.b64",
+      "candidateSourcePacks": ["MedievalVillageExteriorv1.0.zip"],
+      "sourcePackStatus": "verified_source_received",
+      "rebuildTool": "tools/rebuild_world_atlases_from_source_packs.py",
+      "expectedPngSha256": "f31ab8fb16d4511593af1023eb48e1a09b9b89b63feb095c173a31480a3a7130",
+      "slots": [
+        {
+          "key": "house_blue",
+          "destinationRect": [0, 0, 288, 336],
+          "sourceStatus": "verified_composite",
+          "sourceFile": null,
+          "sourceRect": null,
+          "recipe": "rebuild_world_atlases_from_source_packs.py:build_house(blue)",
+          "sources": [
+            {"file": "MedievalVillageExteriorv1.0/RawAssets/Props_Decor.png", "uses": "blue roof, arched door, windows"},
+            {"file": "MedievalVillageExteriorv1.0/RawAssets/Walls.png", "uses": "stone facade and authentic-pixel gable fill"}
+          ]
+        },
+        {
+          "key": "house_purple",
+          "destinationRect": [290, 0, 288, 336],
+          "sourceStatus": "verified_composite",
+          "sourceFile": null,
+          "sourceRect": null,
+          "recipe": "rebuild_world_atlases_from_source_packs.py:build_house(purple)",
+          "sources": [
+            {"file": "MedievalVillageExteriorv1.0/RawAssets/Props_Decor.png", "uses": "purple roof, wooden door, windows"},
+            {"file": "MedievalVillageExteriorv1.0/RawAssets/Walls.png", "uses": "plaster facade"}
+          ]
+        }
+      ]
+    },
+    "world_props_atlas": {
+      "format": "PNG",
+      "size": [500, 294],
+      "destination": "assets/runtime-v2/world_props_atlas.b64",
+      "candidateSourcePacks": ["MedievalVillageExteriorv1.0.zip", "Dark_Swamp_Starter_Pack_v1.0.zip"],
+      "sourcePackStatus": "verified_source_received",
+      "rebuildTool": "tools/rebuild_world_atlases_from_source_packs.py",
+      "expectedPngSha256": "8a931bc0d4a26b637e0836267689f43a8dad2f8fb021ab18fae7f8714a8bf8f9",
+      "slots": [
+        {
+          "key": "altar",
+          "destinationRect": [0, 0, 92, 146],
+          "sourceStatus": "verified_composite",
+          "sourceFile": null,
+          "sourceRect": null,
+          "recipe": "Altar0.png crop [2,0,92,144], placed at [0,1] with transparent top/bottom row; no resampling",
+          "sources": [{"file": "Dark_Swamp_Starter_Pack_v1.0/RawAssets/Altar0.png", "rect": [2, 0, 92, 144]}]
+        },
+        {"key": "bridge_h", "destinationRect": [94, 0, 96, 96], "sourceStatus": "verified", "sourceFile": "Dark_Swamp_Starter_Pack_v1.0/RawAssets/PropsTileset.png", "sourceRect": [288, 0, 96, 96]},
+        {"key": "cart", "destinationRect": [192, 0, 144, 96], "sourceStatus": "verified", "sourceFile": "MedievalVillageExteriorv1.0/RawAssets/Props_Decor.png", "sourceRect": [48, 48, 144, 96]},
+        {"key": "crate_stack", "destinationRect": [338, 0, 96, 96], "sourceStatus": "verified", "sourceFile": "MedievalVillageExteriorv1.0/RawAssets/Props_Decor.png", "sourceRect": [48, 96, 96, 96]},
+        {"key": "fence", "destinationRect": [0, 148, 144, 96], "sourceStatus": "verified", "sourceFile": "MedievalVillageExteriorv1.0/RawAssets/Props_Decor.png", "sourceRect": [48, 192, 144, 96]},
+        {"key": "tree", "destinationRect": [146, 148, 48, 96], "sourceStatus": "verified", "sourceFile": "MedievalVillageExteriorv1.0/RawAssets/Props_Decor.png", "sourceRect": [144, 96, 48, 96]},
+        {
+          "key": "terrain",
+          "destinationRect": [196, 148, 240, 48],
+          "sourceStatus": "verified_composite",
+          "sourceFile": null,
+          "sourceRect": null,
+          "recipe": "five 48x48 cells in order: village Ground [0,0], [48,0], [192,0]; swamp GroundTileset [0,0], [48,0]",
+          "sources": [
+            {"file": "MedievalVillageExteriorv1.0/RawAssets/Ground.png", "rects": [[0, 0, 48, 48], [48, 0, 48, 48], [192, 0, 48, 48]]},
+            {"file": "Dark_Swamp_Starter_Pack_v1.0/RawAssets/GroundTileset.png", "rects": [[0, 0, 48, 48], [48, 0, 48, 48]]}
+          ]
+        },
+        {"key": "barrel", "destinationRect": [438, 148, 48, 48], "sourceStatus": "verified", "sourceFile": "MedievalVillageExteriorv1.0/RawAssets/Props_Decor.png", "sourceRect": [0, 0, 48, 48]},
+        {
+          "key": "bench",
+          "destinationRect": [0, 246, 96, 48],
+          "sourceStatus": "verified_composite",
+          "sourceFile": null,
+          "sourceRect": null,
+          "recipe": "Props_Decor component crop [3,166,43,25], horizontally centered and bottom-aligned in transparent 96x48 slot; no resampling",
+          "sources": [{"file": "MedievalVillageExteriorv1.0/RawAssets/Props_Decor.png", "rect": [3, 166, 43, 25]}]
+        },
+        {"key": "flower_tub", "destinationRect": [98, 246, 48, 48], "sourceStatus": "verified", "sourceFile": "MedievalVillageExteriorv1.0/RawAssets/Props_Decor.png", "sourceRect": [0, 432, 48, 48]},
+        {"key": "lantern", "destinationRect": [148, 246, 48, 48], "sourceStatus": "verified", "sourceFile": "MedievalVillageExteriorv1.0/RawAssets/Sconce_Spritesheet.png", "sourceRect": [0, 0, 48, 48]},
+        {"key": "reeds", "destinationRect": [198, 246, 48, 48], "sourceStatus": "verified", "sourceFile": "Dark_Swamp_Starter_Pack_v1.0/RawAssets/PropsTileset.png", "sourceRect": [384, 48, 48, 48]},
+        {"key": "rocks", "destinationRect": [248, 246, 48, 48], "sourceStatus": "verified", "sourceFile": "Dark_Swamp_Starter_Pack_v1.0/RawAssets/PropsTileset.png", "sourceRect": [0, 48, 48, 48]}
+      ]
+    },
+    "wayfarer_iron_warden": {
+      "format": "WEBP",
+      "size": [256, 1280],
+      "destination": "assets/runtime-v2/characters/wayfarer_iron_warden_q88.b64",
+      "candidateSourcePacks": [],
+      "sourceProvenanceStatus": "unresolved",
+      "slots": [
+        {"key": "wayfarer_male", "destinationRect": [0, 0, 128, 640], "sourceStatus": "unresolved", "sourceFile": null, "sourceRect": null},
+        {"key": "wayfarer_female", "destinationRect": [0, 640, 128, 640], "sourceStatus": "unresolved", "sourceFile": null, "sourceRect": null},
+        {"key": "iron_warden_male", "destinationRect": [128, 0, 128, 640], "sourceStatus": "unresolved", "sourceFile": null, "sourceRect": null},
+        {"key": "iron_warden_female", "destinationRect": [128, 640, 128, 640], "sourceStatus": "unresolved", "sourceFile": null, "sourceRect": null}
+      ],
+      "directionRows": ["up", "left", "down", "right"],
+      "directionCell": [128, 160]
+    }
+  }
+}

@@ -13,8 +13,13 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out repository with full history
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all repository refs for recovery scan
+        run: git fetch --all --tags --prune
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -24,23 +29,63 @@ jobs:
       - name: Install validation dependency
         run: python -m pip install Pillow
 
+      - name: Compile recovery tools
+        run: |
+          python -m py_compile tools/find_runtime_cache_recovery_candidates.py
+          python -m py_compile tools/find_git_history_cache_candidates.py
+          python -m py_compile tools/inventory_git_history_images.py
+          python -m py_compile tools/search_git_history_provenance.py
+          python -m py_compile tools/inventory_runtime_source_pack.py
+          python -m py_compile tools/rebuild_runtime_cache_from_candidate.py
+          python -m py_compile tools/rebuild_world_atlases_from_source_packs.py
+          python -m py_compile tools/validate_runtime_atlas_rebuild_contract.py
+          python -m py_compile tools/diagnose_tiled_layer_lengths.py
+          python -m py_compile tools/repair_tiled_layer_lengths.py
+
+      - name: Scan full Git history for recovery candidates
+        run: python tools/find_git_history_cache_candidates.py
+
+      - name: Inventory historical image derivatives
+        run: python tools/inventory_git_history_images.py
+
+      - name: Search historical asset provenance
+        run: python tools/search_git_history_provenance.py
+
+      - name: Validate runtime atlas rebuild contract
+        run: python tools/validate_runtime_atlas_rebuild_contract.py
+
+      - name: Diagnose runtime caches
+        run: python tools/diagnose_runtime_caches.py
+
+      - name: Diagnose Tiled layer lengths
+        run: python tools/diagnose_tiled_layer_lengths.py
+
+      - name: Validate repaired Tiled layer contract
+        run: python tools/repair_tiled_layer_lengths.py
+
       - name: Validate production asset integration
         run: python tools/validate_hypnobius_integration.py
 
       - name: Validate connected world continuity
+        if: always()
         run: python tools/validate_world_continuity.py
 
       - name: Validate The Old Road quest
+        if: always()
         run: python tools/validate_old_road_quest.py
 
       - name: Validate The Old Road Act II contract
+        if: always()
         run: python tools/validate_old_road_act2_contract.py
 
       - name: Validate Old Barrow production gate
+        if: always()
         run: python tools/validate_old_barrow_interior_readiness.py
 
       - name: Validate zone render profiles
+        if: always()
         run: python tools/validate_render_profiles.py
 
       - name: Validate active JavaScript runtime syntax
+        if: always()
         run: node --check bre-thiar-world-live-v4.js
