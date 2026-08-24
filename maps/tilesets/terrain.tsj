@@ -1,0 +1,23 @@
+{
+  "columns": 5,
+  "grid": {"height":96,"orientation":"orthogonal","width":96},
+  "image": "../../assets/hypnobius/terrain/bre_thiar_terrain_atlas.png",
+  "imageheight": 96,
+  "imagewidth": 480,
+  "margin": 0,
+  "name": "BreThiarTerrain",
+  "spacing": 0,
+  "tilecount": 5,
+  "tileheight": 96,
+  "tilewidth": 96,
+  "type": "tileset",
+  "version": "1.10",
+  "tiledversion": "1.11.2",
+  "tiles": [
+    {"id":0,"type":"grass"},
+    {"id":1,"type":"grass_variant"},
+    {"id":2,"type":"road"},
+    {"id":3,"type":"swamp_bank"},
+    {"id":4,"type":"swamp_water"}
+  ]
+}
