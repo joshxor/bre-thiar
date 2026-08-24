@@ -56,6 +56,8 @@ As of 2026-08-24, Hypnobius' released itch.io pages still list both current outd
 
 Use itch.io's normal download flow. Do not bypass the creator's download handoff, scrape protected files, or commit the original source archives to this repository.
 
+The web-visible purchase pages expose the normal `No thanks, just take me to the downloads` flow, but the archive bytes are not exposed as a static public URL through the project tooling. This is an external source-intake boundary, not a reason to fabricate or scrape the files.
+
 These archive names are **candidate world-art sources**, not proof of individual crop mappings. The Wayfarer / Iron Warden source provenance remains unresolved; do not label that fighter atlas as Hypnobius unless authentic source evidence establishes it.
 
 ## Inventory a freshly recovered/downloaded source pack
