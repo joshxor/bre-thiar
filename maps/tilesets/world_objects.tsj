@@ -1,0 +1,30 @@
+{
+  "columns": 0,
+  "grid": {"height":96,"orientation":"orthogonal","width":96},
+  "margin": 0,
+  "name": "BreThiarWorldObjects",
+  "objectalignment": "bottom",
+  "spacing": 0,
+  "tilecount": 14,
+  "tileheight": 672,
+  "tilewidth": 576,
+  "tiles": [
+    {"id":0,"image":"../../assets/hypnobius/world/house_blue.png","imagewidth":576,"imageheight":672,"type":"house_blue"},
+    {"id":1,"image":"../../assets/hypnobius/world/house_purple.png","imagewidth":576,"imageheight":672,"type":"house_purple"},
+    {"id":2,"image":"../../assets/hypnobius/world/tree.png","imagewidth":96,"imageheight":192,"type":"tree"},
+    {"id":3,"image":"../../assets/hypnobius/world/cart.png","imagewidth":288,"imageheight":192,"type":"cart"},
+    {"id":4,"image":"../../assets/hypnobius/world/barrel.png","imagewidth":96,"imageheight":96,"type":"barrel"},
+    {"id":5,"image":"../../assets/hypnobius/world/crate_stack.png","imagewidth":192,"imageheight":192,"type":"crate_stack"},
+    {"id":6,"image":"../../assets/hypnobius/world/fence.png","imagewidth":288,"imageheight":192,"type":"fence"},
+    {"id":7,"image":"../../assets/hypnobius/world/bench.png","imagewidth":192,"imageheight":96,"type":"bench"},
+    {"id":8,"image":"../../assets/hypnobius/world/flower_tub.png","imagewidth":96,"imageheight":96,"type":"flower_tub"},
+    {"id":9,"image":"../../assets/hypnobius/world/lantern.png","imagewidth":96,"imageheight":96,"type":"lantern"},
+    {"id":10,"image":"../../assets/hypnobius/world/bridge_h.png","imagewidth":192,"imageheight":192,"type":"bridge_h"},
+    {"id":11,"image":"../../assets/hypnobius/world/rocks.png","imagewidth":96,"imageheight":96,"type":"rocks"},
+    {"id":12,"image":"../../assets/hypnobius/world/reeds.png","imagewidth":96,"imageheight":96,"type":"reeds"},
+    {"id":13,"image":"../../assets/hypnobius/world/altar.png","imagewidth":184,"imageheight":292,"type":"altar"}
+  ],
+  "type": "tileset",
+  "version": "1.10",
+  "tiledversion": "1.11.2"
+}
