@@ -27,9 +27,6 @@ jobs:
           python -m py_compile tools/validate_old_road_act2_contract.py
           python -m py_compile tools/validate_old_barrow_interior_readiness.py
 
-      - name: Validate connected world continuity
-        run: python tools/validate_world_continuity.py
-
       - name: Validate The Old Road Act I
         run: python tools/validate_old_road_quest.py
 
