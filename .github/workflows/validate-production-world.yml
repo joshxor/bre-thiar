@@ -35,6 +35,7 @@ jobs:
           python -m py_compile tools/find_git_history_cache_candidates.py
           python -m py_compile tools/rebuild_runtime_cache_from_candidate.py
           python -m py_compile tools/diagnose_tiled_layer_lengths.py
+          python -m py_compile tools/repair_tiled_layer_lengths.py
 
       - name: Scan full Git history for recovery candidates
         run: python tools/find_git_history_cache_candidates.py
@@ -44,6 +45,9 @@ jobs:
 
       - name: Diagnose Tiled layer lengths
         run: python tools/diagnose_tiled_layer_lengths.py
+
+      - name: Validate repaired Tiled layer contract
+        run: python tools/repair_tiled_layer_lengths.py
 
       - name: Validate production asset integration
         run: python tools/validate_hypnobius_integration.py
