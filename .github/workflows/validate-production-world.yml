@@ -33,6 +33,9 @@ jobs:
       - name: Validate The Old Road quest
         run: python tools/validate_old_road_quest.py
 
+      - name: Validate The Old Road Act II contract
+        run: python tools/validate_old_road_act2_contract.py
+
       - name: Validate Old Barrow production gate
         run: python tools/validate_old_barrow_interior_readiness.py
 
