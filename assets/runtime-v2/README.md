@@ -1,0 +1,1 @@
+Runtime-packed Bré Thiar world/character derivatives for the Hypnobius/Tiled village integration. Original source packs are not stored here. See docs/HYPNOBIUS_TILED_INTEGRATION.md and docs/licenses/.
