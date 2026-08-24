@@ -53,19 +53,25 @@ jobs:
         run: python tools/validate_hypnobius_integration.py
 
       - name: Validate connected world continuity
+        if: always()
         run: python tools/validate_world_continuity.py
 
       - name: Validate The Old Road quest
+        if: always()
         run: python tools/validate_old_road_quest.py
 
       - name: Validate The Old Road Act II contract
+        if: always()
         run: python tools/validate_old_road_act2_contract.py
 
       - name: Validate Old Barrow production gate
+        if: always()
         run: python tools/validate_old_barrow_interior_readiness.py
 
       - name: Validate zone render profiles
+        if: always()
         run: python tools/validate_render_profiles.py
 
       - name: Validate active JavaScript runtime syntax
+        if: always()
         run: node --check bre-thiar-world-live-v4.js
