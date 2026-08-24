@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "purpose": "Authoritative output layout for reconstructing corrupted Bré Thiar runtime atlases from authentic source assets without guessing vendor crop locations.",
+  "rules": [
+    "Original vendor/source archives remain outside the repository.",
+    "Do not use flattened screenshots, generated pixels, legacy mobile composites, or guessed crops.",
+    "A source mapping remains unresolved until the authentic pack is inspected and the selected source image/crop is visually verified.",
+    "Derived cache output must preserve the current manifest geometry so active maps and runtime code do not need art-placement changes solely for recovery."
+  ],
+  "targets": {
+    "world_houses_atlas": {
+      "format": "PNG",
+      "size": [578, 336],
+      "destination": "assets/runtime-v2/world_houses_atlas.b64",
+      "candidateSourcePacks": [
+        "MedievalVillageExteriorv1.0.zip"
+      ],
+      "slots": [
+        {
+          "key": "house_blue",
+          "destinationRect": [0, 0, 288, 336],
+          "sourceStatus": "unresolved",
+          "sourceFile": null,
+          "sourceRect": null
+        },
+        {
+          "key": "house_purple",
+          "destinationRect": [290, 0, 288, 336],
+          "sourceStatus": "unresolved",
+          "sourceFile": null,
+          "sourceRect": null
+        }
+      ]
+    },
+    "world_props_atlas": {
+      "format": "PNG",
+      "size": [500, 294],
+      "destination": "assets/runtime-v2/world_props_atlas.b64",
+      "candidateSourcePacks": [
+        "MedievalVillageExteriorv1.0.zip",
+        "Dark_Swamp_Starter_Pack_v1.0.zip"
+      ],
+      "slots": [
+        {"key":"altar","destinationRect":[0,0,92,146],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"bridge_h","destinationRect":[94,0,96,96],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"cart","destinationRect":[192,0,144,96],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"crate_stack","destinationRect":[338,0,96,96],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"fence","destinationRect":[0,148,144,96],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"tree","destinationRect":[146,148,48,96],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"terrain","destinationRect":[196,148,240,48],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"barrel","destinationRect":[438,148,48,48],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"bench","destinationRect":[0,246,96,48],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"flower_tub","destinationRect":[98,246,48,48],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"lantern","destinationRect":[148,246,48,48],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"reeds","destinationRect":[198,246,48,48],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"rocks","destinationRect":[248,246,48,48],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null}
+      ]
+    },
+    "wayfarer_iron_warden": {
+      "format": "WEBP",
+      "size": [256, 1280],
+      "destination": "assets/runtime-v2/characters/wayfarer_iron_warden_q88.b64",
+      "candidateSourcePacks": [],
+      "sourceProvenanceStatus": "unresolved",
+      "slots": [
+        {"key":"wayfarer_male","destinationRect":[0,0,128,640],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"wayfarer_female","destinationRect":[0,640,128,640],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"iron_warden_male","destinationRect":[128,0,128,640],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null},
+        {"key":"iron_warden_female","destinationRect":[128,640,128,640],"sourceStatus":"unresolved","sourceFile":null,"sourceRect":null}
+      ],
+      "directionRows": ["up", "left", "down", "right"],
+      "directionCell": [128, 160]
+    }
+  }
+}
