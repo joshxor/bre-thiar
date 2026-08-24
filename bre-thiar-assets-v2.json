@@ -1,8 +1,8 @@
 {
-  "version": "bre-thiar-hypnobius-v2.1",
+  "version": "bre-thiar-hypnobius-v2.2",
   "map": "maps/Bre_Thiar_Village_Hub_v1.tmj",
   "terrain": {
-    "atlas": "assets/runtime-v2/world_props_atlas.png",
+    "atlas": "props",
     "rect": [196,148,240,48],
     "sourceTileWidth": 48,
     "sourceTileHeight": 48,
@@ -10,14 +10,16 @@
   },
   "worldAtlases": {
     "houses": {
-      "path": "assets/runtime-v2/world_houses_atlas.png",
+      "cache": "assets/runtime-v2/world_houses_atlas.b64",
+      "mime": "image/png",
       "rects": {
         "house_blue": [0,0,288,336],
         "house_purple": [290,0,288,336]
       }
     },
     "props": {
-      "path": "assets/runtime-v2/world_props_atlas.png",
+      "cache": "assets/runtime-v2/world_props_atlas.b64",
+      "mime": "image/png",
       "rects": {
         "altar": [0,0,92,146],
         "bridge_h": [94,0,96,96],
@@ -50,14 +52,44 @@
     "12": {"type":"reeds","atlas":"props","key":"reeds"},
     "13": {"type":"altar","atlas":"props","key":"altar"}
   },
+  "characterAtlases": {
+    "fighter": {
+      "cache": "assets/runtime-v2/characters/wayfarer_iron_warden_q88.b64",
+      "mime": "image/webp"
+    },
+    "mystic": {
+      "parts": [
+        "assets/runtime-v2/characters/mystic_p64_00.b64",
+        "assets/runtime-v2/characters/mystic_p64_01.b64",
+        "assets/runtime-v2/characters/mystic_p64_02.b64",
+        "assets/runtime-v2/characters/mystic_p64_03.b64"
+      ],
+      "mime": "image/png"
+    }
+  },
   "characters": {
-    "wayfarer": {"male":"assets/runtime-v2/characters/wayfarer_male.webp","female":"assets/runtime-v2/characters/wayfarer_female.webp"},
-    "iron_warden": {"male":"assets/runtime-v2/characters/iron_warden_male.webp","female":"assets/runtime-v2/characters/iron_warden_female.webp"},
-    "trail_ranger": {"male":"assets/runtime-v2/characters/trail_ranger_male.webp","female":"assets/runtime-v2/characters/trail_ranger_female.webp"},
-    "runekeeper": {"male":"assets/runtime-v2/characters/runekeeper_male.webp","female":"assets/runtime-v2/characters/runekeeper_female.webp"}
+    "wayfarer": {
+      "male": {"atlas":"fighter","rect":[0,0,128,640]},
+      "female": {"atlas":"fighter","rect":[0,640,128,640]}
+    },
+    "iron_warden": {
+      "male": {"atlas":"fighter","rect":[128,0,128,640]},
+      "female": {"atlas":"fighter","rect":[128,640,128,640]}
+    },
+    "trail_ranger": {
+      "male": {"atlas":"mystic","rect":[0,0,128,640]},
+      "female": {"atlas":"mystic","rect":[0,640,128,640]}
+    },
+    "runekeeper": {
+      "male": {"atlas":"mystic","rect":[128,0,128,640]},
+      "female": {"atlas":"mystic","rect":[128,640,128,640]}
+    }
   },
   "directionRows": {"up":0,"left":1,"down":2,"right":3},
   "characterCell": [128,160],
   "footAnchor": [64,156],
-  "notes": {"animation":"Four-direction static presentation. True walk/combat cycles remain pending."}
+  "notes": {
+    "animation": "Four-direction static presentation. True walk/combat cycles remain pending.",
+    "source": "Runtime caches are production-derived implementation assets. Original Hypnobius source archives are not redistributed by this repository."
+  }
 }
