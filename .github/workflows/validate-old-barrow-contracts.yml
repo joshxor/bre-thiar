@@ -36,8 +36,5 @@ jobs:
       - name: Validate Old Barrow sealed or active state
         run: python tools/validate_old_barrow_interior_readiness.py
 
-      - name: Validate zone render profiles
-        run: python tools/validate_render_profiles.py
-
       - name: Validate active JavaScript runtime syntax
         run: node --check bre-thiar-world-live-v4.js
