@@ -23,13 +23,19 @@ The old mobile village/background images are flattened or use different sprite g
 
 ## Authoritative target contracts
 
-The canonical output layouts are now machine-readable in:
+The canonical output layouts are machine-readable in:
 
 ```text
 docs/RUNTIME_ATLAS_REBUILD_CONTRACT.json
 ```
 
 That file records only facts already established by the active runtime manifest: output dimensions, output cache destinations, named destination slots, and class/gender direction geometry. It deliberately leaves vendor/source filenames and source crop rectangles `unresolved` until authentic source packs are inspected. **Do not guess or infer source crops merely to fill the contract.**
+
+CI validates this contract against the active v4 manifest with:
+
+```bash
+python tools/validate_runtime_atlas_rebuild_contract.py
+```
 
 Final derived atlas targets remain:
 
@@ -129,6 +135,7 @@ Do not merge a cache repair until all of the following pass from the repaired ch
 
 ```bash
 python -m pip install Pillow
+python tools/validate_runtime_atlas_rebuild_contract.py
 python tools/validate_hypnobius_integration.py
 python tools/validate_world_continuity.py
 python tools/validate_old_road_quest.py
