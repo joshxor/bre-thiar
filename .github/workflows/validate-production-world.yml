@@ -1,0 +1,45 @@
+name: Validate production world
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install validation dependency
+        run: python -m pip install Pillow
+
+      - name: Validate production asset integration
+        run: python tools/validate_hypnobius_integration.py
+
+      - name: Validate connected world continuity
+        run: python tools/validate_world_continuity.py
+
+      - name: Validate The Old Road quest
+        run: python tools/validate_old_road_quest.py
+
+      - name: Validate Old Barrow production gate
+        run: python tools/validate_old_barrow_interior_readiness.py
+
+      - name: Validate zone render profiles
+        run: python tools/validate_render_profiles.py
+
+      - name: Validate active JavaScript runtime syntax
+        run: node --check bre-thiar-world-live-v4.js
