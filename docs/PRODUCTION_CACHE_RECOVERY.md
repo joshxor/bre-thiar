@@ -1,95 +1,85 @@
 # Production Runtime Cache Recovery
 
-## Incident status
+## Current status
 
-The production validation workflow exposed three historically corrupted text-encoded runtime image caches that predate the current Old Barrow work:
+Production validation originally exposed three historically corrupted runtime image caches:
 
 - `assets/runtime-v2/world_houses_atlas.b64`
 - `assets/runtime-v2/world_props_atlas.b64`
 - `assets/runtime-v2/characters/wayfarer_iron_warden_q88.b64`
 
-The strict integration validator is correct to reject these files. Do **not** weaken base64/image validation to make CI green.
+The two **world** dependencies are no longer source-blocked. On 2026-08-24 authentic Hypnobius source archives were supplied and inspected:
 
-The props and fighter files contain literal omitted-text placeholders inside their encoded payloads. The houses payload contains no illegal characters but has an impossible base64 length and does not decode as an image. The fighter WebP header indicates an intended total file size far larger than the committed recoverable bytes, so the missing data cannot be reconstructed honestly from the repository text.
+- `MedievalVillageExteriorv1.0.zip`
+  - SHA-256 `9283c11a67b13c7a2254e19551995d9743b8606d339890c0a268b6082fca7468`
+- `Dark_Swamp_Starter_Pack_v1.0.zip`
+  - SHA-256 `43cb4478dd3b4f80cf9f8e58f66bf68f4e08d37e2618f5d5ee3d9cae5dcf660e`
 
-Reachable Git history has now been exhaustively checked in two ways:
+The original ZIPs remain outside the repository. Their raw 48px-family assets were visually inspected and mapped to the active world vocabulary. House assets are authored composites made only from supplied roof/wall/door/window pixels plus transparency; they are not represented as nonexistent vendor-prebuilt houses.
 
-1. exact final-atlas geometry search across all reachable refs
-2. inventory of every decodable historical image blob looking for reconstructable component geometry
+The **remaining external blocker is the Wayfarer / Iron Warden fighter atlas only**. Its source package/provenance is still unknown. Do not infer that it is Hypnobius merely because the world art is Hypnobius.
 
-Neither search found a valid house atlas, props atlas, fighter atlas, 128×640 fighter direction strip, or 128×160 fighter direction frame. Historical text/provenance search also did not recover a source package name for Wayfarer / Iron Warden. Git recovery is therefore exhausted unless a previously unreachable external repository/archive is later discovered.
+## Verified world-atlas rebuild
 
-The old mobile village/background images are flattened or use different sprite geometry and are not acceptable recovery sources.
-
-## Authoritative target contracts
-
-The canonical output layouts are machine-readable in:
+The source-to-runtime layout is authoritative in:
 
 ```text
 docs/RUNTIME_ATLAS_REBUILD_CONTRACT.json
 ```
 
-That file records only facts already established by the active runtime manifest: output dimensions, output cache destinations, named destination slots, and class/gender direction geometry. It deliberately leaves vendor/source filenames and source crop rectangles `unresolved` until authentic source packs are inspected. **Do not guess or infer source crops merely to fill the contract.**
+The deterministic compositor is:
 
-CI validates this contract against the active v4 manifest with:
+```text
+tools/rebuild_world_atlases_from_source_packs.py
+```
+
+Dry-run and verify the exact archives/output hashes:
 
 ```bash
-python tools/validate_runtime_atlas_rebuild_contract.py
+python tools/rebuild_world_atlases_from_source_packs.py \
+  /path/to/MedievalVillageExteriorv1.0.zip \
+  /path/to/Dark_Swamp_Starter_Pack_v1.0.zip
 ```
 
-Final derived atlas targets remain:
+Optional derived PNG previews outside the repository:
 
-| Target | Format | Geometry | Derived cache destination |
-| --- | --- | ---: | --- |
-| House atlas | PNG | 578×336 | `assets/runtime-v2/world_houses_atlas.b64` |
-| Props/terrain atlas | PNG | 500×294 | `assets/runtime-v2/world_props_atlas.b64` |
-| Wayfarer/Iron Warden atlas | WebP | 256×1280 | `assets/runtime-v2/characters/wayfarer_iron_warden_q88.b64` |
-
-The existing Mystic atlas is intact and is **not** part of this recovery incident.
-
-## Authentic source packages currently identified
-
-As of 2026-08-24, Hypnobius' released itch.io pages still list both current outdoor source archives and explicitly permit commercial/personal use and modification while prohibiting redistribution of the source pack:
-
-- `MedievalVillageExteriorv1.0.zip` — 298 kB — 48×48 top-down village exterior assets, raw tilesheets included
-- `Dark_Swamp_Starter_Pack_v1.0.zip` — 166 kB — 48×48 / 24×24 swamp terrain and props, raw tilesheets included
-
-Use itch.io's normal download flow. Do not bypass the creator's download handoff, scrape protected files, or commit the original source archives to this repository.
-
-The web-visible purchase pages expose the normal `No thanks, just take me to the downloads` flow, but the archive bytes are not exposed as a static public URL through the project tooling. This is an external source-intake boundary, not a reason to fabricate or scrape the files.
-
-These archive names are **candidate world-art sources**, not proof of individual crop mappings. The Wayfarer / Iron Warden source provenance remains unresolved; do not label that fighter atlas as Hypnobius unless authentic source evidence establishes it.
-
-## Inventory a freshly recovered/downloaded source pack
-
-Before resolving any source crop mapping, run the read-only pack inventory:
-
-```powershell
-python tools/inventory_runtime_source_pack.py C:\path\to\MedievalVillageExteriorv1.0.zip
-python tools/inventory_runtime_source_pack.py C:\path\to\Dark_Swamp_Starter_Pack_v1.0.zip
+```bash
+python tools/rebuild_world_atlases_from_source_packs.py \
+  /path/to/MedievalVillageExteriorv1.0.zip \
+  /path/to/Dark_Swamp_Starter_Pack_v1.0.zip \
+  --preview-dir /tmp/bre-thiar-world-atlas-preview
 ```
 
-Machine-readable output:
+Write only the two production-derived world caches:
 
-```powershell
-python tools/inventory_runtime_source_pack.py C:\path\to\source.zip --json > source-pack-inventory.json
+```bash
+python tools/rebuild_world_atlases_from_source_packs.py \
+  /path/to/MedievalVillageExteriorv1.0.zip \
+  /path/to/Dark_Swamp_Starter_Pack_v1.0.zip \
+  --write
 ```
 
-The inventory reads image entries directly from ZIPs without extracting or modifying them. It reports:
+Deterministic derived PNG contracts:
 
-- archive entry name
-- image format and dimensions
-- SHA-256
-- byte length
-- 48px / 24px grid alignment
+| Target | Geometry | SHA-256 |
+| --- | ---: | --- |
+| House atlas | 578×336 | `f31ab8fb16d4511593af1023eb48e1a09b9b89b63feb095c173a31480a3a7130` |
+| Props/terrain atlas | 500×294 | `8a931bc0d4a26b637e0836267689f43a8dad2f8fb021ab18fae7f8714a8bf8f9` |
 
-Use this inventory plus visual inspection to resolve `sourceFile` and `sourceRect` fields in `docs/RUNTIME_ATLAS_REBUILD_CONTRACT.json`. A mapping is not verified merely because dimensions look plausible.
+The script refuses a source archive/member hash mismatch and refuses output drift from these PNG hashes. It never copies source ZIP contents into the repository.
 
-## Search local workspaces and backups for already-built atlas candidates
+## Fighter recovery status
 
-Use the read-only final-atlas scanner against likely source locations. It examines ordinary PNG/WebP files and image entries inside ZIP archives without extracting or modifying them.
+`assets/runtime-v2/characters/wayfarer_iron_warden_q88.b64` is still corrupted. Reachable Git history was exhaustively checked for:
 
-PowerShell example:
+- a 256×1280 final fighter atlas
+- 128×640 class/gender direction strips
+- 128×160 direction frames
+- historical text identifying a source package
+
+No authentic recovery source was found. The old 192×224 mobile player sheet is different geometry and is not a substitute. The intact Mystic atlas is also not a substitute.
+
+Use the read-only external candidate scanner if additional local backups/source packs become available:
 
 ```powershell
 python tools/find_runtime_cache_recovery_candidates.py `
@@ -98,42 +88,17 @@ python tools/find_runtime_cache_recovery_candidates.py `
   $env:USERPROFILE\Downloads
 ```
 
-Machine-readable output:
+An exact-geometry match is only a candidate; verify provenance and art before writing anything.
 
-```powershell
-python tools/find_runtime_cache_recovery_candidates.py C:\Projects\BreThiar --json > recovery-candidates.json
+## Validation
+
+The rebuild contract is checked against the live v4 manifest by:
+
+```bash
+python tools/validate_runtime_atlas_rebuild_contract.py
 ```
 
-The scanner only reports geometry matches and SHA-256 hashes. A match is **not** automatically approved; visually/source-review the candidate and confirm that it is the intended independent atlas rather than a flattened preview, mobile derivative, or unrelated image with coincidental dimensions.
-
-## Rebuild a cache only from an approved candidate
-
-If an intact final atlas is recovered, use the guarded rebuild tool in dry-run mode first:
-
-```powershell
-python tools/rebuild_runtime_cache_from_candidate.py world_houses_atlas C:\path\to\candidate.png
-```
-
-For a candidate stored inside a ZIP:
-
-```powershell
-python tools/rebuild_runtime_cache_from_candidate.py world_props_atlas C:\path\to\source.zip --entry "path/in/archive/props.png"
-```
-
-The tool prints the candidate SHA-256. Only after verifying the art should the cache be written, and the exact hash must be supplied again:
-
-```powershell
-python tools/rebuild_runtime_cache_from_candidate.py world_houses_atlas C:\path\to\candidate.png `
-  --write --expected-sha256 <verified-hash>
-```
-
-This produces only the production-derived base64 cache. It does not copy the original vendor/source package into the repository.
-
-If only raw vendor tilesheets are recovered, first resolve the source mappings in `docs/RUNTIME_ATLAS_REBUILD_CONTRACT.json`; a deterministic compositor should then build the exact final atlas layout from those verified mappings. Do not hand-splice or eyeball the final canvas.
-
-## Required validation after recovery
-
-Do not merge a cache repair until all of the following pass from the repaired checkout:
+Before merging production recovery, all of the following must pass:
 
 ```bash
 python -m pip install Pillow
@@ -151,22 +116,23 @@ The GitHub Actions production-world workflow remains the final merge gate.
 
 ## Village spawn correction
 
-The original integration validator also contained a stale assumption that Bré Thiar had exactly one spawn. The connected-world production map intentionally has two named spawn objects:
+The connected village intentionally has exactly two named spawn objects:
 
 - `Player Spawn`
 - `North Arrival`
 
-The validator should require this exact set. `North Arrival` is the reciprocal destination used when returning from Rowanwood and must not be removed to satisfy an obsolete test.
+`North Arrival` is required for the reciprocal Rowanwood route and must not be removed to satisfy the superseded one-spawn assumption.
 
-## Never use these as recovery shortcuts
+## Never use these recovery shortcuts
 
-- flattened `village.webp` or `village_front.webp`
-- the old mobile `player.webp` sheet, which uses different frame geometry
+- flattened `village.webp` / `village_front.webp`
+- the old mobile `player.webp`
 - screenshots or concept maps
-- guessed or generated pixels
+- guessed/generated pixels
 - guessed vendor crop coordinates
-- base64 padding/trimming that merely silences a decoder
+- padding/trimming corrupt base64 merely to silence a decoder
 - disabling strict image decoding
-- replacing the current art with a different asset family solely to make CI pass
+- substituting Mystic for Wayfarer / Iron Warden
+- replacing the established art family solely to make CI green
 
-If authentic source material cannot be located, leave CI red and recover/re-download the licensed/free source assets instead of fabricating the missing bytes.
+If authentic fighter source material cannot be located, keep the fighter gate red until an explicitly approved legitimate replacement/re-authoring decision is made.
